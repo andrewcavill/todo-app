@@ -1,7 +1,7 @@
 <template>
-  <div class="users">
+  <div>
     <h1>Users</h1>
-    <table id="users">
+    <table class="table">
         <tr>
             <th>ID</th>
             <th>Name</th>

@@ -1,7 +1,7 @@
 <template>
-  <div class="user">
+  <div>
     <h1>User</h1>
-    <table id="user" v-if="user">
+    <table class="table" v-if="user">
         <tr>
             <th>ID:</th>
             <td>{{user.id}}</td>
@@ -15,7 +15,7 @@
             <td>{{user.email}}</td>
         </tr>
     </table>
-    <table id="todolists" v-if="todolists">
+    <table class="table" id="todolists" v-if="todoLists">
         <tr>
             <th>ID</th>
             <th>Name</th>
@@ -24,12 +24,12 @@
             <th>Number of Items Complete</th>
         </tr>
         <tbody>
-            <tr v-for="todolist in todolists" :key="todolist.id">
-                <td><router-link :to="'/users/'+user.id+'/todolists/'+todolist.id">{{ todolist.id }}</router-link></td>
-                <td>{{ todolist.name }}</td>
-                <td>{{ todolist.isComplete }}</td>
-                <td>{{ todolist.numberOfItems }}</td>
-                <td>{{ todolist.numberOfItemsCompleted }}</td>
+            <tr v-for="todoList in todoLists" :key="todoList.id">
+                <td><router-link :to="'/users/'+userId+'/todolists/'+todoList.id">{{ todoList.id }}</router-link></td>
+                <td>{{ todoList.name }}</td>
+                <td>{{ todoList.isComplete }}</td>
+                <td>{{ todoList.numberOfItems }}</td>
+                <td>{{ todoList.numberOfItemsCompleted }}</td>
             </tr>
         </tbody>
     </table>
@@ -45,7 +45,7 @@ export default {
     return {
       userId: this.$route.params.userId,
       user: null,
-      todolists: null
+      todoLists: null
     }
   },
   mounted() {
@@ -57,7 +57,7 @@ export default {
         });
       axios
         .get('http://localhost:5000/api/users/'+this.userId+'/todolists')
-        .then(response => (this.todolists = response.data))
+        .then(response => (this.todoLists = response.data))
         .catch(function (error) {
             console.log(error);
         });
