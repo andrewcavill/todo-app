@@ -62,7 +62,7 @@ export default {
         });
       axios
         .get('http://localhost:5000/api/users/'+this.userId+'/todolists/'+this.todoListId+'/todoitems')
-        .then(response => (this.todoItems = response.data))
+        .then(response => (this.todoItems = response.data.sort(function(a,b) { return a.id - b.id })))
         .catch(function (error) {
             console.log(error);
         });
