@@ -23,6 +23,7 @@
             <td>{{todoList.numberOfItemsCompleted}}</td>
         </tr>
     </table>
+    <h1>Todo Items</h1>
     <table class="table">
         <tr>
             <th>ID</th>
