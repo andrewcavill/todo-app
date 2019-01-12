@@ -20,26 +20,27 @@
 </template>
 
 <script>
-import axios from "axios";
-
-
+import UserApi from '@/services/UserApi';
 
 export default {
   name: "TodoHeader",
   data() {
     return {
       userId: this.$route.params.userId,
-      user: null,
-      anInt: i
+      user: null
     };
   },
+  methods: {
+    getUser() {
+      UserApi.getUser(this.userId)
+        .then(user => (this.user = user))
+        .catch(function(error) {
+          console.log(error);
+        })
+    }
+  },
   created() {
-    axios
-      .get("http://localhost:5000/api/users/" + this.userId)
-      .then(response => (this.user = response.data))
-      .catch(function(error) {
-        console.log(error);
-      })
+    this.getUser();
   },
   watch: {
     $route(to, from) {
@@ -49,12 +50,7 @@ export default {
         this.user = null;
       } else {
         if (this.userId != oldUserId) {
-          axios
-            .get("http://localhost:5000/api/users/" + this.userId)
-            .then(response => (this.user = response.data))
-            .catch(function(error) {
-              console.log(error);
-            });
+          this.getUser();
         }
       }
     }
