@@ -11,7 +11,7 @@
           Incomplete items: {{todoList.numberOfItems - todoList.numberOfItemsCompleted}}
         </b-card-body>
         <b-card-footer>
-          <router-link :to="'/users/'+userId+'/todolists/'+todoListId">Edit List</router-link>
+          <router-link :to="'/users/'+userId+'/todolists/'+todoList.id">Edit List</router-link>
         </b-card-footer>
       </b-card>
     </b-card-group>

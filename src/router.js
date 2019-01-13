@@ -15,6 +15,11 @@ export default new Router({
       component: Users
     },
     {
+      path: '/logout',
+      name: 'logout',
+      redirect: '/'
+    },
+    {
       path: '/users/:userId',
       name: 'user',
       component: User
