@@ -23,6 +23,20 @@ export default {
                 "/todoitems",
                 todoItemName)
             .then(response => { return response.data })
+    },
+
+    completeTodoItem(userId, todoListId, todoItemId, complete) {
+        axios
+            .put(
+                "http://localhost:5000/api/users/" +
+                userId +
+                "/todolists/" +
+                todoListId +
+                "/todoitems/" +
+                todoItemId +
+                "/complete",
+                complete,
+                {headers: {"Content-Type": "application/json"}});
     }
 
 }

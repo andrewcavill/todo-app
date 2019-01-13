@@ -19,7 +19,7 @@
     <b-input-group v-for="todoItem in incompleteTodoItems" :key="todoItem.id" class="todoItem">
       <b-form-input v-model="todoItem.name">{{ todoItem.name }}</b-form-input>
       <b-input-group-append>
-        <b-btn variant="success">Complete</b-btn>
+        <b-btn variant="success" v-on:click="completeTodoItem(todoItem.id)">Complete</b-btn>
       </b-input-group-append>
     </b-input-group>
 
@@ -94,6 +94,44 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    completeTodoItem(todoItemId) {
+      // Find todo item to be completed
+      var todoItem = this.incompleteTodoItems.find(
+        item => item.id == todoItemId
+      );
+      // Add todo item to the list of completed todo items
+      this.completedTodoItems.push(todoItem);
+      // Remove todo item from the list of incomplete todo items
+      this.incompleteTodoItems = this.incompleteTodoItems.filter(
+          item => item.id != todoItemId
+      );
+      // Call the todo items API to complete the todo item
+      TodoItemApi.completeTodoItem(
+        this.userId,
+        this.todoListId,
+        todoItemId,
+        true
+      );
+    },
+    incompleteTodoItem(todoItemId) {
+      // Find todo item to be incompleted
+      var todoItem = this.incompleteTodoItems.find(
+        item => item.id == todoItemId
+      );
+      // Add todo item to the list of incomplete todo items
+      this.incompleteTodoItems.push(todoItem);
+      // Remove todo item from the list of completed todo items
+      this.completedTodoItems = this.completedTodoItems.filter(
+          item => item.id != todoItemId
+      );
+      // Call the todo items API to incomplete the todo item
+      TodoItemApi.completeTodoItem(
+        this.userId,
+        this.todoListId,
+        todoItemId,
+        false
+      );
     }
   },
   mounted() {
