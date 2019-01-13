@@ -4,12 +4,14 @@
 
     <br>
 
-    <b-input-group prepend="Add a new item">
-      <b-form-input></b-form-input>
-      <b-input-group-append>
-        <b-btn variant="info">Submit</b-btn>
-      </b-input-group-append>
-    </b-input-group>
+    <b-form @submit="addTodoItem">
+      <b-input-group>
+        <b-form-input v-model="newTodoItemName" placeholder="Enter a new item"></b-form-input>
+        <b-input-group-append>
+          <b-btn type="submit" variant="info" :disabled="!newTodoItemName">Add Item</b-btn>
+        </b-input-group-append>
+      </b-input-group>
+    </b-form>
 
     <br>
 
@@ -17,7 +19,7 @@
     <b-input-group v-for="todoItem in incompleteTodoItems" :key="todoItem.id" class="todoItem">
       <b-form-input v-model="todoItem.name">{{ todoItem.name }}</b-form-input>
       <b-input-group-append>
-        <b-btn variant="info">Complete</b-btn>
+        <b-btn variant="success">Complete</b-btn>
       </b-input-group-append>
     </b-input-group>
 
@@ -30,7 +32,6 @@
         :key="todoItem.id"
       >{{ todoItem.name }}</b-list-group-item>
     </b-list-group>
-
   </div>
 </template>
 
@@ -46,9 +47,9 @@ export default {
       userId: this.$route.params.userId,
       todoListId: this.$route.params.todoListId,
       todoList: null,
-      todoItems: null,
       incompleteTodoItems: null,
-      completedTodoItems: null
+      completedTodoItems: null,
+      newTodoItemName: null
     };
   },
   methods: {
@@ -80,6 +81,19 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    addTodoItem(evt) {
+      var newTodoItem = {
+        name: this.newTodoItemName,
+        isComplete: false
+      };
+      this.incompleteTodoItems.push(newTodoItem);
+      this.newTodoItemName = null;
+      TodoItemApi.addTodoItem(this.userId, this.todoListId, newTodoItem)
+        .then(newTodoItemId => (newTodoItem.Id = newTodoItemId))
+        .catch(function(error) {
+          console.log(error);
+        });
     }
   },
   mounted() {
@@ -91,6 +105,6 @@ export default {
 
 <style>
 .todoItem {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 </style>
