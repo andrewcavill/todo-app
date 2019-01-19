@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import TodoListApi from "@/services/TodoListApi";
 import TodoItemApi from "@/services/TodoItemApi";
 
@@ -131,7 +130,7 @@ export default {
         item => item.id != todoItemId
       );
       // Call the todo items API to complete the todo item
-      TodoItemApi.completeTodoItem(
+      TodoItemApi.updateComplete(
         this.userId,
         this.todoListId,
         todoItemId,
@@ -150,7 +149,7 @@ export default {
         item => item.id != todoItemId
       );
       // Call the todo items API to incomplete the todo item
-      TodoItemApi.completeTodoItem(
+      TodoItemApi.updateComplete(
         this.userId,
         this.todoListId,
         todoItemId,
@@ -163,6 +162,7 @@ export default {
     },
     submitTodoListName(evt) {
       this.isTodoListNameEditable = false;
+      TodoListApi.updateName(this.userId, this.todoListId, this.todoList.name);
     }
   },
   mounted() {

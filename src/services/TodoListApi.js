@@ -22,8 +22,28 @@ export default {
             .then(response => { return response.data })
     },
 
-    updateTodoListName(userId, todoListId, todoListName) {
+    updateName(userId, todoListId, name) {
+        axios
+            .put(
+                "http://localhost:5000/api/users/" +
+                userId +
+                "/todolists/" +
+                todoListId +
+                "/name",
+                '"'+name+'"',
+                { headers: { "Content-Type": "application/json" } });
+    },
 
+    updateComplete(userId, todoListId, complete) {
+        axios
+            .put(
+                "http://localhost:5000/api/users/" +
+                userId +
+                "/todolists/" +
+                todoListId +
+                "/complete",
+                completes,
+                { headers: { "Content-Type": "application/json" } });
     }
 
 }
