@@ -29,7 +29,7 @@
     <h6>Incomplete Items</h6>
     <table class="table table-sm" v-if="incompleteTodoItems">
       <tr v-for="todoItem in incompleteTodoItems" :key="todoItem.id">
-        <td class="w-100">{{ todoItem.name }}</td>
+        <td class="w-100">{{todoItem.name}}</td>
         <td>
           <b-btn variant="success" size="sm" v-on:click="completeTodoItem(todoItem.id)">Complete</b-btn>
         </td>
@@ -81,6 +81,14 @@ export default {
           console.log(error);
         });
     },
+    editTodoListName() {
+      this.isTodoListNameEditable = true;
+      this.$nextTick(() => this.$refs.todoListNameInput.focus());
+    },
+    submitTodoListName(evt) {
+      this.isTodoListNameEditable = false;
+      TodoListApi.updateName(this.userId, this.todoListId, this.todoList.name);
+    },
     getTodoItems() {
       TodoItemApi.getTodoItems(this.userId, this.todoListId)
         .then(todoItems => {
@@ -91,6 +99,7 @@ export default {
             .sort(function(a, b) {
               return a.id - b.id;
             });
+          console.log("setting completed todo items");
           this.completedTodoItems = todoItems
             .filter(function(a) {
               return a.isComplete;
@@ -156,13 +165,16 @@ export default {
         false
       );
     },
-    editTodoListName() {
-      this.isTodoListNameEditable = true;
-      this.$nextTick(() => this.$refs.todoListNameInput.focus());
-    },
-    submitTodoListName(evt) {
-      this.isTodoListNameEditable = false;
-      TodoListApi.updateName(this.userId, this.todoListId, this.todoList.name);
+    deleteTodoItem(todoItemId) {
+      // Find todo item to be deleted
+      var todoItem = this.incompleteTodoItems.find(
+        item => item.id == todoItemId
+      );
+      // Remove todo item from the list of incomplete todo items
+      this.incompleteTodoItems = this.incompleteTodoItems.filter(
+        item => item.id != todoItemId
+      );
+      TodoItemApi.deleteTodoItem(this.userId, this.todoListId, todoItemId);
     }
   },
   mounted() {

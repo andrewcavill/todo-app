@@ -35,8 +35,8 @@ export default {
                 "/todoitems/" +
                 todoItemId +
                 "/name",
-                name,
-                {headers: {"Content-Type": "application/json"}});
+                '"' + name + '"',
+                { headers: { "Content-Type": "application/json" } });
     },
 
     updateComplete(userId, todoListId, todoItemId, complete) {
@@ -50,7 +50,18 @@ export default {
                 todoItemId +
                 "/complete",
                 complete,
-                {headers: {"Content-Type": "application/json"}});
+                { headers: { "Content-Type": "application/json" } });
+    },
+
+    deleteTodoItem(userId, todoListId, todoItemId) {
+        axios
+            .delete(
+                "http://localhost:5000/api/users/" +
+                userId +
+                "/todolists/" +
+                todoListId +
+                "/todoitems/" +
+                todoItemId);
     }
 
 }
