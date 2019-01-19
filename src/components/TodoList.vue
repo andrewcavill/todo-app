@@ -1,10 +1,21 @@
 <template>
   <div>
-    <h3 v-if="todoList">{{todoList.name}}</h3>
+    <div v-if="todoList" id="todoListName">
+      <span v-show="!isTodoListNameEditable" @click="editTodoListName();">{{todoList.name}}</span>
+      <b-form @submit.prevent="submitTodoListName" v-if="isTodoListNameEditable">
+        <b-form-input
+          ref="todoListNameInput"
+          name="todoListName"
+          @blur.native="submitTodoListName()"
+          v-model="todoList.name"
+          class="w-50"
+        ></b-form-input>
+      </b-form>
+    </div>
 
     <br>
 
-    <b-form @submit="addTodoItem">
+    <b-form @submit.prevent="addTodoItem">
       <b-input-group>
         <b-form-input v-model="newTodoItemName" placeholder="Enter a new item"></b-form-input>
         <b-input-group-append>
@@ -57,6 +68,7 @@ export default {
       userId: this.$route.params.userId,
       todoListId: this.$route.params.todoListId,
       todoList: null,
+      isTodoListNameEditable: false,
       incompleteTodoItems: null,
       completedTodoItems: null,
       newTodoItemName: null
@@ -144,6 +156,13 @@ export default {
         todoItemId,
         false
       );
+    },
+    editTodoListName() {
+      this.isTodoListNameEditable = true;
+      this.$nextTick(() => this.$refs.todoListNameInput.focus());
+    },
+    submitTodoListName(evt) {
+      this.isTodoListNameEditable = false;
     }
   },
   mounted() {
@@ -154,7 +173,8 @@ export default {
 </script>
 
 <style>
-.todoItem {
-  margin-bottom: 10px;
+#todoListName {
+  font-weight: bold;
+  font-size: 14pt;
 }
 </style>

@@ -20,6 +20,10 @@ export default {
                 todoListId
             )
             .then(response => { return response.data })
+    },
+
+    updateTodoListName(userId, todoListId, todoListName) {
+
     }
 
 }
