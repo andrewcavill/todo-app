@@ -12,6 +12,9 @@ Vue.use(BootstrapVue)
 import VeeValidate from 'vee-validate';
 Vue.use(VeeValidate);
 
+import feather from 'vue-icon'
+Vue.use(feather, 'v-icon')
+
 Vue.config.productionTip = false
 
 new Vue({

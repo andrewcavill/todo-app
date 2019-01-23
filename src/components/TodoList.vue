@@ -26,32 +26,45 @@
 
     <br>
 
-    <h6>Incomplete Items</h6>
-    <table class="table table-sm" v-if="incompleteTodoItems">
-      <tr v-for="todoItem in incompleteTodoItems" :key="todoItem.id">
-        <td class="w-100">{{todoItem.name}}</td>
-        <td>
-          <b-btn variant="success" size="sm" v-on:click="completeTodoItem(todoItem.id)">Complete</b-btn>
-        </td>
-        <td>
-          <b-btn variant="secondary" size="sm" v-on:click="updateTodoItem(todoItem.id)">Update</b-btn>
-        </td>
-        <td>
-          <b-btn variant="danger" size="sm" v-on:click="deleteTodoItem(todoItem.id)">Delete</b-btn>
-        </td>
-      </tr>
+    <h6>Incomplete Items (new)</h6>
+    <table class="table table-sm" v-if="todoItems">
+      <transition-group name="todoItemsTransition" tag="tr">
+        <tr v-show="!todoItem.isComplete" v-for="todoItem in todoItems" :key="todoItem.id">
+          <td class="w-100">
+            <b-form-checkbox
+              v-model="todoItem.isComplete"
+              v-on:change="updateComplete(todoItem.id, true)"
+            >{{todoItem.name}}</b-form-checkbox>
+          </td>
+          <td>
+            <a href="#" v-on:click="updateTodoItem(todoItem.id)">
+              <v-icon name="edit"></v-icon>
+            </a>
+          </td>
+          <td>
+            <a href="#" v-on:click="deleteTodoItem(todoItem.id)">
+              <v-icon name="trash-2"></v-icon>
+            </a>
+          </td>
+        </tr>
+      </transition-group>
     </table>
 
     <br>
 
     <h6>Completed Items</h6>
-    <table class="table table-sm" v-if="completedTodoItems">
-      <tr v-for="todoItem in completedTodoItems" :key="todoItem.id">
-        <td class="w-100">{{ todoItem.name }}</td>
-        <td>
-          <b-btn variant="info" size="sm" v-on:click="incompleteTodoItem(todoItem.id)">Incomplete</b-btn>
-        </td>
-      </tr>
+    <table class="table table-sm" v-if="todoItems">
+      <transition-group name="todoItemsTransition" tag="tr">
+        <tr v-show="todoItem.isComplete" v-for="todoItem in todoItems" :key="todoItem.id">
+          <td class="w-100">
+            <b-form-checkbox
+              v-model="todoItem.isComplete"
+              v-on:change="updateComplete(todoItem.id, false)"
+            >{{todoItem.name}}</b-form-checkbox>
+          </td>
+          <td></td>
+        </tr>
+      </transition-group>
     </table>
   </div>
 </template>
@@ -68,8 +81,7 @@ export default {
       todoListId: this.$route.params.todoListId,
       todoList: null,
       isTodoListNameEditable: false,
-      incompleteTodoItems: null,
-      completedTodoItems: null,
+      todoItems: null,
       newTodoItemName: null
     };
   },
@@ -92,21 +104,9 @@ export default {
     getTodoItems() {
       TodoItemApi.getTodoItems(this.userId, this.todoListId)
         .then(todoItems => {
-          this.incompleteTodoItems = todoItems
-            .filter(function(a) {
-              return !a.isComplete;
-            })
-            .sort(function(a, b) {
-              return a.id - b.id;
-            });
-          console.log("setting completed todo items");
-          this.completedTodoItems = todoItems
-            .filter(function(a) {
-              return a.isComplete;
-            })
-            .sort(function(a, b) {
-              return a.id - b.id;
-            });
+          this.todoItems = todoItems.sort(function(a, b) {
+            return a.id - b.id;
+          });
         })
         .catch(function(error) {
           console.log(error);
@@ -120,60 +120,25 @@ export default {
       TodoItemApi.addTodoItem(this.userId, this.todoListId, newTodoItem)
         .then(newTodoItemId => {
           newTodoItem.id = newTodoItemId;
-          this.incompleteTodoItems.push(newTodoItem);
+          this.todoItems.push(newTodoItem);
           this.newTodoItemName = null;
         })
         .catch(function(error) {
           console.log(error);
         });
     },
-    completeTodoItem(todoItemId) {
-      // Find todo item to be completed
-      var todoItem = this.incompleteTodoItems.find(
-        item => item.id == todoItemId
-      );
-      // Add todo item to the list of completed todo items
-      this.completedTodoItems.push(todoItem);
-      // Remove todo item from the list of incomplete todo items
-      this.incompleteTodoItems = this.incompleteTodoItems.filter(
-        item => item.id != todoItemId
-      );
-      // Call the todo items API to complete the todo item
+    updateComplete(todoItemId, complete) {
       TodoItemApi.updateComplete(
         this.userId,
         this.todoListId,
         todoItemId,
-        true
-      );
-    },
-    incompleteTodoItem(todoItemId) {
-      // Find todo item to be incompleted
-      var todoItem = this.completedTodoItems.find(
-        item => item.id == todoItemId
-      );
-      // Add todo item to the list of incomplete todo items
-      this.incompleteTodoItems.push(todoItem);
-      // Remove todo item from the list of completed todo items
-      this.completedTodoItems = this.completedTodoItems.filter(
-        item => item.id != todoItemId
-      );
-      // Call the todo items API to incomplete the todo item
-      TodoItemApi.updateComplete(
-        this.userId,
-        this.todoListId,
-        todoItemId,
-        false
+        complete
       );
     },
     deleteTodoItem(todoItemId) {
-      // Find todo item to be deleted
-      var todoItem = this.incompleteTodoItems.find(
-        item => item.id == todoItemId
-      );
-      // Remove todo item from the list of incomplete todo items
-      this.incompleteTodoItems = this.incompleteTodoItems.filter(
-        item => item.id != todoItemId
-      );
+      // Remove todo item from the list of todo items
+      this.todoItems = this.todoItems.filter(item => item.id != todoItemId);
+      // Call the todo items API to delete item
       TodoItemApi.deleteTodoItem(this.userId, this.todoListId, todoItemId);
     }
   },
@@ -185,8 +150,29 @@ export default {
 </script>
 
 <style>
+.icon {
+  width: 24px;
+}
+
 #todoListName {
   font-weight: bold;
   font-size: 14pt;
+}
+
+.todoItemsTransition-item {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.todoItemsTransition-enter-active {
+  transition: all 1s;
+}
+
+.todoItemsTransition-leave-active {
+  transition: all 1s;
+}
+
+.todoItemsTransition-enter, .todoItemsTransition-leave-to {
+  opacity: 0;
 }
 </style>
