@@ -34,7 +34,8 @@
             <b-form-checkbox
               v-model="todoItem.isComplete"
               v-on:change="updateComplete(todoItem.id, true)"
-            >{{todoItem.name}}</b-form-checkbox>
+            ></b-form-checkbox>
+            <span>{{todoItem.name}}</span>
           </td>
           <td>
             <a href="#" v-on:click="updateTodoItem(todoItem.id)">
@@ -60,7 +61,8 @@
             <b-form-checkbox
               v-model="todoItem.isComplete"
               v-on:change="updateComplete(todoItem.id, false)"
-            >{{todoItem.name}}</b-form-checkbox>
+            ></b-form-checkbox>
+            <span>{{todoItem.name}}</span>
           </td>
           <td></td>
         </tr>
@@ -150,6 +152,13 @@ export default {
 </script>
 
 <style>
+
+/* Line up checkboxes with item text */
+.custom-control-inline {
+  display: -webkit-inline-box !important;
+}
+
+/* Size of feather icons */
 .icon {
   width: 24px;
 }
@@ -159,6 +168,7 @@ export default {
   font-size: 14pt;
 }
 
+/* The next few styles control the transition when items as (in)completed */
 .todoItemsTransition-item {
   display: inline-block;
   margin-right: 10px;
