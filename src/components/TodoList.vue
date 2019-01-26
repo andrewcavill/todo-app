@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="todoList" id="todoListName">
-      <span v-show="!isTodoListNameEditable" @click="editTodoListName();">{{todoList.name}}</span>
-      <b-form @submit.prevent="submitTodoListName" v-if="isTodoListNameEditable">
+      <span v-show="!isTodoListNameUpdatable" @click="updateTodoListName();">{{todoList.name}}</span>
+      <b-form @submit.prevent="submitTodoListName" v-if="isTodoListNameUpdatable">
         <b-form-input
           ref="todoListNameInput"
           name="todoListName"
@@ -38,7 +38,7 @@
             <span>{{todoItem.name}}</span>
           </td>
           <td>
-            <a href="#" v-on:click="updateTodoItem(todoItem.id)">
+            <a href="#" v-b-modal.myModal v-on:click="pickTodoItemForUpdate(todoItem.id)">
               <v-icon name="edit"></v-icon>
             </a>
           </td>
@@ -68,6 +68,10 @@
         </tr>
       </transition-group>
     </table>
+
+    <b-modal id="myModal" size="lg" title="Update Item" @ok="updateTodoItem" centered>
+      <b-form-input v-if="todoItemForUpdate" type="text" v-model="todoItemForUpdate.name"></b-form-input>
+    </b-modal>
   </div>
 </template>
 
@@ -82,25 +86,23 @@ export default {
       userId: this.$route.params.userId,
       todoListId: this.$route.params.todoListId,
       todoList: null,
-      isTodoListNameEditable: false,
+      isTodoListNameUpdatable: false,
       todoItems: null,
-      newTodoItemName: null
+      newTodoItemName: null,
+      todoItemForUpdate: null
     };
   },
   methods: {
     getTodoList() {
       TodoListApi.getTodoList(this.userId, this.todoListId)
-        .then(todoList => (this.todoList = todoList))
-        .catch(function(error) {
-          console.log(error);
-        });
+        .then(todoList => (this.todoList = todoList));
     },
-    editTodoListName() {
-      this.isTodoListNameEditable = true;
+    updateTodoListName() {
+      this.isTodoListNameUpdatable = true;
       this.$nextTick(() => this.$refs.todoListNameInput.focus());
     },
     submitTodoListName(evt) {
-      this.isTodoListNameEditable = false;
+      this.isTodoListNameUpdatable = false;
       TodoListApi.updateName(this.userId, this.todoListId, this.todoList.name);
     },
     getTodoItems() {
@@ -109,9 +111,6 @@ export default {
           this.todoItems = todoItems.sort(function(a, b) {
             return a.id - b.id;
           });
-        })
-        .catch(function(error) {
-          console.log(error);
         });
     },
     addTodoItem(evt) {
@@ -124,9 +123,6 @@ export default {
           newTodoItem.id = newTodoItemId;
           this.todoItems.push(newTodoItem);
           this.newTodoItemName = null;
-        })
-        .catch(function(error) {
-          console.log(error);
         });
     },
     updateComplete(todoItemId, complete) {
@@ -142,6 +138,19 @@ export default {
       this.todoItems = this.todoItems.filter(item => item.id != todoItemId);
       // Call the todo items API to delete item
       TodoItemApi.deleteTodoItem(this.userId, this.todoListId, todoItemId);
+    },
+    pickTodoItemForUpdate(todoItemId) {
+      this.todoItemForUpdate = this.todoItems.filter(
+        i => i.id == todoItemId
+      )[0];
+    },
+    updateTodoItem(evt) {
+      TodoItemApi.updateName(
+        this.userId,
+        this.todoListId,
+        this.todoItemForUpdate.id,
+        this.todoItemForUpdate.name
+      );
     }
   },
   mounted() {
@@ -152,7 +161,6 @@ export default {
 </script>
 
 <style>
-
 /* Line up checkboxes with item text */
 .custom-control-inline {
   display: -webkit-inline-box !important;
@@ -182,7 +190,8 @@ export default {
   transition: all 1s;
 }
 
-.todoItemsTransition-enter, .todoItemsTransition-leave-to {
+.todoItemsTransition-enter,
+.todoItemsTransition-leave-to {
   opacity: 0;
 }
 </style>
