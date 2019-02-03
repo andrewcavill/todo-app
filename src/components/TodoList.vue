@@ -1,16 +1,20 @@
 <template>
   <div>
-    <div v-if="todoList" id="todoListName">
-      <span v-show="!isTodoListNameUpdatable" @click="updateTodoListName();">{{todoList.name}}</span>
-      <b-form @submit.prevent="submitTodoListName" v-if="isTodoListNameUpdatable">
-        <b-form-input
-          ref="todoListNameInput"
-          name="todoListName"
-          @blur.native="submitTodoListName()"
-          v-model="todoList.name"
-          class="w-50"
-        ></b-form-input>
-      </b-form>
+    <div v-if="todoList">
+      <div class="row">
+        <div id="todoListName" class="col-sm-6">
+          <span v-show="!isTodoListNameUpdatable" @click="updateTodoListName();">{{todoList.name}}</span>
+          <b-form @submit.prevent="submitTodoListName" v-if="isTodoListNameUpdatable">
+            <b-form-input
+              ref="todoListNameInput"
+              name="todoListName"
+              @blur.native="submitTodoListName()"
+              v-model="todoList.name"
+              class="w-50"
+            ></b-form-input>
+          </b-form>
+        </div>
+      </div>
     </div>
 
     <br>
@@ -29,11 +33,15 @@
     <h6>Incomplete Items (new)</h6>
     <table class="table table-sm" v-if="todoItems">
       <transition-group name="todoItemsTransition" tag="tr">
-        <tr v-show="!todoItem.isComplete" v-for="todoItem in todoItems" :key="todoItem.id">
+        <tr
+          v-show="!todoItem.isComplete && !todoItem.isDeleted"
+          v-for="todoItem in todoItems"
+          :key="todoItem.id"
+        >
           <td class="w-100">
             <b-form-checkbox
               v-model="todoItem.isComplete"
-              v-on:change="updateComplete(todoItem.id, true)"
+              v-on:change="updateIsComplete(todoItem.id, true)"
             ></b-form-checkbox>
             <span>{{todoItem.name}}</span>
           </td>
@@ -43,7 +51,7 @@
             </a>
           </td>
           <td>
-            <a href="#" v-on:click="deleteTodoItem(todoItem.id)">
+            <a href="#" v-on:click="updateIsDeleted(todoItem.id, true)">
               <v-icon name="trash-2"></v-icon>
             </a>
           </td>
@@ -56,11 +64,15 @@
     <h6>Completed Items</h6>
     <table class="table table-sm" v-if="todoItems">
       <transition-group name="todoItemsTransition" tag="tr">
-        <tr v-show="todoItem.isComplete" v-for="todoItem in todoItems" :key="todoItem.id">
+        <tr
+          v-show="todoItem.isComplete && !todoItem.isDeleted"
+          v-for="todoItem in todoItems"
+          :key="todoItem.id"
+        >
           <td class="w-100">
             <b-form-checkbox
               v-model="todoItem.isComplete"
-              v-on:change="updateComplete(todoItem.id, false)"
+              v-on:change="updateIsComplete(todoItem.id, false)"
             ></b-form-checkbox>
             <span>{{todoItem.name}}</span>
           </td>
@@ -72,6 +84,29 @@
     <b-modal id="myModal" size="lg" title="Update Item" @ok="updateTodoItem" centered>
       <b-form-input v-if="todoItemForUpdate" type="text" v-model="todoItemForUpdate.name"></b-form-input>
     </b-modal>
+
+    <div
+      class="col-sm-6"
+      v-if="deletedTodoItems.length>0"
+      style="position:absolute; bottom:0; right:0"
+    >
+      <b-alert
+        fade
+        show="todoItemToDelete.dismissCountDown"
+        dismissible
+        v-for="deletedTodoItem in deletedTodoItems"
+        :key="deletedTodoItem.id"
+      >
+        <div class="row">
+          <div class="col-sm-9">Deleted Item: "{{deletedTodoItem.name}}"</div>
+          <div class="col-sm-2">
+            <a href="#" v-on:click="updateIsDeleted(deletedTodoItem.id, false)">UNDO</a>
+          </div>
+          <div class="col-sm-1"></div>
+        </div>
+      </b-alert>
+      
+    </div>
   </div>
 </template>
 
@@ -89,13 +124,15 @@ export default {
       isTodoListNameUpdatable: false,
       todoItems: null,
       newTodoItemName: null,
-      todoItemForUpdate: null
+      todoItemForUpdate: null,
+      deletedTodoItems: []
     };
   },
   methods: {
     getTodoList() {
-      TodoListApi.getTodoList(this.userId, this.todoListId)
-        .then(todoList => (this.todoList = todoList));
+      TodoListApi.getTodoList(this.userId, this.todoListId).then(
+        todoList => (this.todoList = todoList)
+      );
     },
     updateTodoListName() {
       this.isTodoListNameUpdatable = true;
@@ -106,38 +143,58 @@ export default {
       TodoListApi.updateName(this.userId, this.todoListId, this.todoList.name);
     },
     getTodoItems() {
-      TodoItemApi.getTodoItems(this.userId, this.todoListId)
-        .then(todoItems => {
-          this.todoItems = todoItems.sort(function(a, b) {
-            return a.id - b.id;
-          });
+      TodoItemApi.getTodoItems(this.userId, this.todoListId).then(todoItems => {
+        this.todoItems = todoItems.sort(function(a, b) {
+          return a.id - b.id;
         });
+      });
     },
     addTodoItem(evt) {
       var newTodoItem = {
         name: this.newTodoItemName,
         isComplete: false
       };
-      TodoItemApi.addTodoItem(this.userId, this.todoListId, newTodoItem)
-        .then(newTodoItemId => {
+      TodoItemApi.addTodoItem(this.userId, this.todoListId, newTodoItem).then(
+        newTodoItemId => {
           newTodoItem.id = newTodoItemId;
           this.todoItems.push(newTodoItem);
           this.newTodoItemName = null;
-        });
+        }
+      );
     },
-    updateComplete(todoItemId, complete) {
-      TodoItemApi.updateComplete(
+    updateIsComplete(todoItemId, isComplete) {
+      TodoItemApi.updateIsComplete(
         this.userId,
         this.todoListId,
         todoItemId,
-        complete
+        isComplete
       );
     },
-    deleteTodoItem(todoItemId) {
-      // Remove todo item from the list of todo items
-      this.todoItems = this.todoItems.filter(item => item.id != todoItemId);
-      // Call the todo items API to delete item
-      TodoItemApi.deleteTodoItem(this.userId, this.todoListId, todoItemId);
+    updateIsDeleted(todoItemId, isDeleted) {
+      // Find to do item to (un)delete
+      var todoItemToDelete = this.todoItems.filter(
+        item => item.id == todoItemId
+      )[0];
+      // Set IsDeleted property on todo item
+      todoItemToDelete.isDeleted = isDeleted;
+      // If deleting item, display an alert for 10 seconds
+      if (isDeleted) {
+        todoItemToDelete.dismissCountDown = 10;
+        this.deletedTodoItems.push(todoItemToDelete);
+      }
+      // If undoing the deletion then remove the alert
+      else {
+        this.deletedTodoItems = this.deletedTodoItems.filter(
+          item => item.id != todoItemId
+        );
+      }
+      // Call the todo items API to update the IsDeleted property
+      TodoItemApi.updateIsDeleted(
+        this.userId,
+        this.todoListId,
+        todoItemToDelete.id,
+        isDeleted
+      );
     },
     pickTodoItemForUpdate(todoItemId) {
       this.todoItemForUpdate = this.todoItems.filter(

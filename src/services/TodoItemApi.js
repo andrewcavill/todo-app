@@ -39,7 +39,7 @@ export default {
                 { headers: { "Content-Type": "application/json" } });
     },
 
-    updateComplete(userId, todoListId, todoItemId, complete) {
+    updateIsComplete(userId, todoListId, todoItemId, isComplete) {
         axios
             .put(
                 "http://localhost:5000/api/users/" +
@@ -48,20 +48,23 @@ export default {
                 todoListId +
                 "/todoitems/" +
                 todoItemId +
-                "/complete",
-                complete,
+                "/iscomplete",
+                isComplete,
                 { headers: { "Content-Type": "application/json" } });
     },
 
-    deleteTodoItem(userId, todoListId, todoItemId) {
+    updateIsDeleted(userId, todoListId, todoItemId, isDeleted) {
         axios
-            .delete(
+            .put(
                 "http://localhost:5000/api/users/" +
                 userId +
                 "/todolists/" +
                 todoListId +
                 "/todoitems/" +
-                todoItemId);
+                todoItemId +
+                "/isdeleted",
+                isDeleted,
+                { headers: { "Content-Type": "application/json" } });
     }
 
 }
