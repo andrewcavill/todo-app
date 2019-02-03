@@ -82,7 +82,7 @@
     </table>
 
     <b-modal id="myModal" size="lg" title="Update Item" @ok="updateTodoItem" centered>
-      <b-form-input v-if="todoItemForUpdate" type="text" v-model="todoItemForUpdate.name"></b-form-input>
+      <b-form-input v-if="todoItemForUpdate" type="text" v-model="todoItemForUpdate.updatedName"></b-form-input>
     </b-modal>
 
     <div
@@ -92,7 +92,7 @@
     >
       <b-alert
         fade
-        show="todoItemToDelete.dismissCountDown"
+        show="10"
         dismissible
         v-for="deletedTodoItem in deletedTodoItems"
         :key="deletedTodoItem.id"
@@ -105,7 +105,7 @@
           <div class="col-sm-1"></div>
         </div>
       </b-alert>
-      
+
     </div>
   </div>
 </template>
@@ -200,8 +200,10 @@ export default {
       this.todoItemForUpdate = this.todoItems.filter(
         i => i.id == todoItemId
       )[0];
+      this.todoItemForUpdate.updatedName = this.todoItemForUpdate.name;
     },
     updateTodoItem(evt) {
+      this.todoItemForUpdate.name = this.todoItemForUpdate.updatedName;
       TodoItemApi.updateName(
         this.userId,
         this.todoListId,
