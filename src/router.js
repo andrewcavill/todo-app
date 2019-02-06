@@ -1,9 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Users from './components/Users.vue'
-import User from './components/User.vue'
+import TodoLists from './components/TodoLists.vue'
 import TodoList from './components/TodoList.vue'
 import TodoItem from './components/TodoItem.vue'
+import NewTodoList from './components/NewTodoList.vue'
 
 Vue.use(Router)
 
@@ -20,9 +21,14 @@ export default new Router({
       redirect: '/'
     },
     {
-      path: '/users/:userId',
-      name: 'user',
-      component: User
+      path: '/users/:userId/todolists',
+      name: 'todoLists',
+      component: TodoLists
+    },
+    {
+      path: '/users/:userId/newtodolist',
+      name: 'newTodoList',
+      component: NewTodoList
     },
     {
       path: '/users/:userId/todolists/:todoListId',

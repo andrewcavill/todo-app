@@ -23,7 +23,7 @@ import UserApi from "@/services/UserApi";
 import TodoListApi from "@/services/TodoListApi";
 
 export default {
-  name: "User",
+  name: "TodoLists",
   data() {
     return {
       userId: this.$route.params.userId,
