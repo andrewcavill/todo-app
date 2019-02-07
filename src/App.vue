@@ -1,7 +1,7 @@
 <template>
-  <div id="app" class="container">
+  <div id="app" class="container pt-3">
     <TodoHeader/>
-    <div id="view">
+    <div id="view" class="pt-3">
       <router-view/>
     </div>
   </div>
@@ -19,7 +19,9 @@ export default {
 </script>
 
 <style>
-  #view {
-    padding: 20px;
-  }
+
+#app {
+  max-width: 900px;
+}
+
 </style>
