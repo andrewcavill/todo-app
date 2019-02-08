@@ -14,6 +14,9 @@
             ></b-form-input>
           </b-form>
         </div>
+        <div class="col-sm-6">
+          <b-button class="float-right" size="sm" variant="primary" v-b-modal.deleteListModal>Delete List</b-button>
+        </div>
       </div>
     </div>
 
@@ -46,7 +49,7 @@
             <span>{{todoItem.name}}</span>
           </td>
           <td>
-            <a href="#" v-b-modal.myModal v-on:click="pickTodoItemForUpdate(todoItem.id)">
+            <a href="#" v-b-modal.updateItemModal v-on:click="pickTodoItemForUpdate(todoItem.id)">
               <v-icon name="edit"></v-icon>
             </a>
           </td>
@@ -81,8 +84,12 @@
       </transition-group>
     </table>
 
-    <b-modal id="myModal" size="lg" title="Update Item" @ok="updateTodoItem" centered>
+    <b-modal id="updateItemModal" size="lg" title="Update Item" @ok="updateTodoItem" centered>
       <b-form-input v-if="todoItemForUpdate" type="text" v-model="todoItemForUpdate.updatedName"></b-form-input>
+    </b-modal>
+
+    <b-modal id="deleteListModal" title="Delete List" @ok="deleteTodoList" centered>
+      Are you sure you want to delete this list?
     </b-modal>
 
     <div
@@ -105,7 +112,6 @@
           <div class="col-sm-1"></div>
         </div>
       </b-alert>
-
     </div>
   </div>
 </template>
@@ -209,6 +215,11 @@ export default {
         this.todoListId,
         this.todoItemForUpdate.id,
         this.todoItemForUpdate.name
+      );
+    },
+    deleteTodoList(evt) {
+      TodoListApi.deleteTodoList(this.userId, this.todoListId).then( 
+        x => this.$router.push({ path: '/users/'+this.userId+'/todolists' })
       );
     }
   },

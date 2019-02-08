@@ -33,27 +33,37 @@ export default {
     },
 
     updateName(userId, todoListId, name) {
-        axios
+        return axios
             .put(
                 "http://localhost:5000/api/users/" +
                 userId +
                 "/todolists/" +
                 todoListId +
                 "/name",
-                '"'+name+'"',
+                '"' + name + '"',
                 { headers: { "Content-Type": "application/json" } });
     },
 
     updateComplete(userId, todoListId, complete) {
-        axios
+        return axios
             .put(
                 "http://localhost:5000/api/users/" +
                 userId +
                 "/todolists/" +
                 todoListId +
                 "/complete",
-                completes,
+                complete,
                 { headers: { "Content-Type": "application/json" } });
+    },
+
+    deleteTodoList(userId, todoListId) {
+        return axios
+            .delete(
+                "http://localhost:5000/api/users/" +
+                userId +
+                "/todolists/" +
+                todoListId
+            )
     }
 
 }
