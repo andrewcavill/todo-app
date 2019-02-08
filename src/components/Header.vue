@@ -11,7 +11,7 @@
       <b-collapse is-nav id="nav_collapse" v-if="user">
         <b-navbar-nav>
           <b-nav-item :to="'/users/'+user.id+'/todolists'">My Lists</b-nav-item>
-          <b-nav-item :to="'/users/'+user.id+'/newtodolist'">New List</b-nav-item>
+          <b-nav-item v-b-modal.addTodoList v-on:click="showAddTodoListModal()">New List</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -24,18 +24,24 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+
+    <b-modal id="addTodoList" size="lg" title="Add Todo List" @ok="addTodoList" centered>
+      <b-form-input type="text" v-model="newTodoListName"></b-form-input>
+    </b-modal>
   </div>
 </template>
 
 <script>
 import UserApi from "@/services/UserApi";
+import TodoListApi from "@/services/TodoListApi";
 
 export default {
   name: "TodoHeader",
   data() {
     return {
       userId: this.$route.params.userId,
-      user: null
+      user: null,
+      newTodoListName: null
     };
   },
   methods: {
@@ -45,6 +51,22 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
+    },
+    showAddTodoListModal() {
+      this.newTodoListName = null;
+    },
+    addTodoList() {
+      TodoListApi.addTodoList(this.userId, this.newTodoListName).then(
+        newTodoListId => this.$router.push({ path: '/users/'+this.userId+'/todolists/'+newTodoListId })
+      );
+    },
+    addTodoList() {
+      var newTodoList = {
+        name: this.newTodoListName
+      };
+      TodoListApi.addTodoList(this.userId, newTodoList).then(
+        newTodoListId => this.$router.push({ path: '/users/'+this.userId+'/todolists/'+newTodoListId })
+      );
     }
   },
   mounted() {

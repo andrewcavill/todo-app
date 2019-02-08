@@ -22,6 +22,16 @@ export default {
             .then(response => { return response.data })
     },
 
+    addTodoList(userId, todoList) {
+        return axios
+            .post(
+                "http://localhost:5000/api/users/" +
+                userId +
+                "/todolists",
+                todoList)
+            .then(response => { return response.data })
+    },
+
     updateName(userId, todoListId, name) {
         axios
             .put(

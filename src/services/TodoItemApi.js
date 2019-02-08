@@ -13,7 +13,7 @@ export default {
             .then(response => { return response.data })
     },
 
-    addTodoItem(userId, todoListId, todoItemName) {
+    addTodoItem(userId, todoListId, todoItem) {
         return axios
             .post(
                 "http://localhost:5000/api/users/" +
@@ -21,7 +21,7 @@ export default {
                 "/todolists/" +
                 todoListId +
                 "/todoitems",
-                todoItemName)
+                todoItem)
             .then(response => { return response.data })
     },
 
