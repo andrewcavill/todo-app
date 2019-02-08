@@ -15,10 +15,10 @@
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
-        <b-navbar-nav class="ml-auto">
+        <b-navbar-nav class="ml-auto"  v-if="user">
           <b-nav-item-dropdown :text="user.name" right>
-            <b-dropdown-item to="/changepassword">Change Password</b-dropdown-item>
-            <b-dropdown-item to="/editprofile">Edit Profile</b-dropdown-item>
+            <b-dropdown-item :to="'/users/'+user.id+'/changepassword'">Change Password</b-dropdown-item>
+            <b-dropdown-item :to="'/users/'+user.id+'/editprofile'">Edit Profile</b-dropdown-item>
             <b-dropdown-item to="/logout">Logout</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
@@ -29,7 +29,6 @@
 
 <script>
 import UserApi from "@/services/UserApi";
-import TodoListApi from "@/services/TodoListApi";
 
 export default {
   name: "TodoHeader",

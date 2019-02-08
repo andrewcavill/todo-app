@@ -1,7 +1,7 @@
 <template>
   <b-form @submit.prevent="addTodoList">
     <b-input-group>
-      <b-form-input v-model="newTodoListName" placeholder="Enter name of new list"></b-form-input>
+      <b-form-input autofocus v-model="newTodoListName" placeholder="Enter name of new list"></b-form-input>
       <b-input-group-append>
         <b-btn type="submit" variant="primary">Add List</b-btn>
       </b-input-group-append>

@@ -5,6 +5,8 @@ import TodoLists from './components/TodoLists.vue'
 import TodoList from './components/TodoList.vue'
 import TodoItem from './components/TodoItem.vue'
 import NewTodoList from './components/NewTodoList.vue'
+import ChangePassword from './components/ChangePassword.vue'
+import EditProfile from './components/EditProfile.vue'
 
 Vue.use(Router)
 
@@ -19,6 +21,16 @@ export default new Router({
       path: '/logout',
       name: 'logout',
       redirect: '/'
+    },
+    {
+      path: '/users/:userId/changepassword',
+      name: 'changePassword',
+      component: ChangePassword
+    },
+    {
+      path: '/users/:userId/editprofile',
+      name: 'editProfile',
+      component: EditProfile
     },
     {
       path: '/users/:userId/todolists',
