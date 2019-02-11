@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Login from './components/Login.vue'
 import Users from './components/Users.vue'
 import TodoLists from './components/TodoLists.vue'
 import TodoList from './components/TodoList.vue'
@@ -14,8 +15,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'users',
-      component: Users
+      name: 'login',
+      component: Login
     },
     {
       path: '/logout',

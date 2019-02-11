@@ -33,7 +33,7 @@
 
     <br>
 
-    <h6>Incomplete Items (new)</h6>
+    <h6>Incomplete Items</h6>
     <table class="table table-sm" v-if="todoItems">
       <transition-group name="todoItemsTransition" tag="tr">
         <tr
