@@ -5,7 +5,7 @@
         <b-form-input v-model="email"></b-form-input>
       </b-form-group>
       <b-form-group horizontal label="Password" :label-cols="2">
-        <b-form-input v-model="password"></b-form-input>
+        <b-form-input type="password" v-model="password"></b-form-input>
       </b-form-group>
       <b-btn type="submit" variant="primary">Login</b-btn>
     </b-form>
@@ -29,6 +29,7 @@ export default {
     login(evt) {
       UserApi.getUserByEmail(this.email).then(
         user => {
+          this.$store.commit('changeUser', user)
           if (user)
             this.$router.push({ path: '/users/'+user.id+'/todolists' })
           else

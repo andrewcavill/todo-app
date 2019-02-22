@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from './components/Login.vue'
+import Logout from './components/Logout.vue'
 import Users from './components/Users.vue'
 import TodoLists from './components/TodoLists.vue'
 import TodoList from './components/TodoList.vue'
@@ -21,7 +22,7 @@ export default new Router({
     {
       path: '/logout',
       name: 'logout',
-      redirect: '/'
+      component: Logout
     },
     {
       path: '/users/:userId/changepassword',
