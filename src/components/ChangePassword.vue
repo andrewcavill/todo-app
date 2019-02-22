@@ -27,7 +27,6 @@ export default {
   name: "ChangePassword",
   data() {
     return {
-      userId: this.$route.params.userId,
       existingPassword: null,
       newPassword: null,
       confirmNewPassword: null,

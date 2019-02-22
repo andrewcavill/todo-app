@@ -20,21 +20,18 @@ export default {
   name: "EditProfile",
   data() {
     return {
-      userId: this.$route.params.userId,
-      user: null,
       updateSuccessful: false
     };
   },
   methods: {
-    getUser() {
-      UserApi.getUser(this.userId).then(user => (this.user = user));
-    },
     updateUser(evt) {
       UserApi.updateUser(this.user).then(x => this.updateSuccessful = true);
     }
   },
-  mounted() {
-    this.getUser();
+  computed: {
+    user() {
+      return this.$store.getters.user;
+    }
   }
 };
 </script>
