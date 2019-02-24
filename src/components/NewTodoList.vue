@@ -16,17 +16,21 @@ export default {
   name: "NewTodoList",
   data() {
     return {
-      userId: this.$route.params.userId,
       newTodoListName: null
     };
+  },
+  computed: {
+    user() {
+      return this.$store.getters.user;
+    }
   },
   methods: {
     addTodoList(evt) {
       var newTodoList = {
         name: this.newTodoListName
       };
-      TodoListApi.addTodoList(this.userId, newTodoList).then(
-        newTodoListId => this.$router.push({ path: '/users/'+this.userId+'/todolists/'+newTodoListId })
+      TodoListApi.addTodoList(this.user.id, newTodoList).then(
+        newTodoListId => this.$router.push({ path: '/users/'+this.user.id+'/todolists/'+newTodoListId })
       );
     }
   }

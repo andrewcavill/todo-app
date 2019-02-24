@@ -124,7 +124,6 @@ export default {
   name: "TodoList",
   data() {
     return {
-      userId: this.$route.params.userId,
       todoListId: this.$route.params.todoListId,
       todoList: null,
       isTodoListNameUpdatable: false,
@@ -134,9 +133,14 @@ export default {
       deletedTodoItems: []
     };
   },
+  computed: {
+    user() {
+      return this.$store.getters.user;
+    }
+  },
   methods: {
     getTodoList() {
-      TodoListApi.getTodoList(this.userId, this.todoListId).then(
+      TodoListApi.getTodoList(this.user.id, this.todoListId).then(
         todoList => (this.todoList = todoList)
       );
     },
@@ -146,10 +150,10 @@ export default {
     },
     submitTodoListName(evt) {
       this.isTodoListNameUpdatable = false;
-      TodoListApi.updateName(this.userId, this.todoListId, this.todoList.name);
+      TodoListApi.updateName(this.user.id, this.todoListId, this.todoList.name);
     },
     getTodoItems() {
-      TodoItemApi.getTodoItems(this.userId, this.todoListId).then(todoItems => {
+      TodoItemApi.getTodoItems(this.user.id, this.todoListId).then(todoItems => {
         this.todoItems = todoItems.sort(function(a, b) {
           return a.id - b.id;
         });
@@ -160,7 +164,7 @@ export default {
         name: this.newTodoItemName,
         isComplete: false
       };
-      TodoItemApi.addTodoItem(this.userId, this.todoListId, newTodoItem).then(
+      TodoItemApi.addTodoItem(this.user.id, this.todoListId, newTodoItem).then(
         newTodoItemId => {
           newTodoItem.id = newTodoItemId;
           this.todoItems.push(newTodoItem);
@@ -170,7 +174,7 @@ export default {
     },
     updateIsComplete(todoItemId, isComplete) {
       TodoItemApi.updateIsComplete(
-        this.userId,
+        this.user.id,
         this.todoListId,
         todoItemId,
         isComplete
@@ -196,7 +200,7 @@ export default {
       }
       // Call the todo items API to update the IsDeleted property
       TodoItemApi.updateIsDeleted(
-        this.userId,
+        this.user.id,
         this.todoListId,
         todoItemToDelete.id,
         isDeleted
@@ -211,15 +215,15 @@ export default {
     updateTodoItem(evt) {
       this.todoItemForUpdate.name = this.todoItemForUpdate.updatedName;
       TodoItemApi.updateName(
-        this.userId,
+        this.user.id,
         this.todoListId,
         this.todoItemForUpdate.id,
         this.todoItemForUpdate.name
       );
     },
     deleteTodoList(evt) {
-      TodoListApi.deleteTodoList(this.userId, this.todoListId).then( 
-        x => this.$router.push({ path: '/users/'+this.userId+'/todolists' })
+      TodoListApi.deleteTodoList(this.user.id, this.todoListId).then( 
+        x => this.$router.push({ path: '/users/'+this.user.id+'/todolists' })
       );
     }
   },
